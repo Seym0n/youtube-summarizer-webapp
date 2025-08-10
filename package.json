@@ -9,10 +9,5 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build"
-  },
-  "overrides": {
-    "vite": {
-      "rollup": "npm:@rollup/wasm-node"
-    }
   }
 }
