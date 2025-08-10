@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:tempestphp.com)",
+      "Bash(mkdir:*)",
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": []
+  }
+}
