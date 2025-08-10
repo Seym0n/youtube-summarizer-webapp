@@ -1,5 +1,8 @@
 # YouTube Video Summarizer
 
+<img width="1904" height="895" alt="image" src="https://github.com/user-attachments/assets/160de70d-caf1-4ea8-b980-a3b3fc6b55f4" />
+
+
 A modern web application built with [Tempest PHP Framework](https://tempestphp.com) that generates AI-powered summaries of YouTube videos in multiple languages and formats.
 
 ## Features
