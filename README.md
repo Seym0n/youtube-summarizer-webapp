@@ -29,7 +29,7 @@ A modern web application built with [Tempest PHP Framework](https://tempestphp.c
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/Seym0n/youtube-summarizer-webapp
 cd youtube-summarizer-webapp
 ```
 
