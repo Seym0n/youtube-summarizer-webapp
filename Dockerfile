@@ -29,10 +29,10 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Copy package files
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # Install Node dependencies
-RUN npm ci --only=production
+RUN npm install --only=production
 
 # Copy application files
 COPY . .
