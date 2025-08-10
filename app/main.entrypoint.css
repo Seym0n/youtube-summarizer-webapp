@@ -2,6 +2,15 @@
 
 /* Custom styles for YouTube Summarizer */
 
+/* Prevent horizontal overflow */
+body, html {
+    overflow-x: hidden;
+}
+
+.min-h-screen {
+    overflow-x: hidden;
+}
+
 /* Smooth transitions for FAQ icons */
 .faq-icon svg {
     transition: transform 0.3s ease;
@@ -10,6 +19,19 @@
 /* Custom gradient background - Force the red gradient */
 .bg-gradient-to-br {
     background: linear-gradient(135deg, #f87171 0%, #dc2626 100%) !important;
+}
+
+/* Glass morphism effect for form */
+.bg-white\/95 {
+    background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+}
+
+.border-white\/20 {
+    border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Red gradient utilities */
@@ -28,6 +50,54 @@
 
 .drop-shadow-md {
     filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
+}
+
+/* Enhanced form styling */
+.shadow-inner {
+    box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+}
+
+.bg-gray-50\/50 {
+    background-color: rgba(249, 250, 251, 0.5) !important;
+}
+
+/* Language dropdown styling */
+#language-dropdown {
+    z-index: 50;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.language-option:hover {
+    background-color: #fef2f2 !important;
+    transform: translateX(4px);
+    transition: all 0.2s ease;
+}
+
+/* Grid responsive enhancement */
+@media (max-width: 768px) {
+    .grid-cols-1.md\:grid-cols-2 {
+        gap: 1rem;
+    }
+}
+
+/* Enhanced button styling */
+button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgb(0 0 0 / 0.15);
+}
+
+/* Input focus enhancements */
+input:focus, .focus\:border-red-500:focus {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+select:focus, .focus\:border-red-500:focus {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 /* Loading spinner animation */
@@ -113,9 +183,30 @@
 }
 
 /* Focus styles */
-input:focus, select:focus, button:focus {
+input:focus, select:focus {
     outline: 2px solid #dc2626;
     outline-offset: 2px;
+}
+
+/* Form button focus styles */
+button[type="submit"]:focus, #pasteBtn:focus {
+    outline: 2px solid #dc2626;
+    outline-offset: 2px;
+}
+
+/* FAQ button styles - no red outline */
+.faq-trigger {
+    cursor: pointer !important;
+}
+
+.faq-trigger:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.faq-trigger:hover {
+    background-color: #f9fafb;
+    cursor: pointer;
 }
 
 /* Error state styles */

@@ -10,79 +10,146 @@
                     Get instant summaries of any YouTube video in your preferred format and language.
                 </p>
                 
-                <!-- Rounded Input Form -->
-                <div class="mx-auto mt-10 max-w-2xl rounded-2xl bg-white p-8 shadow-2xl">
-                    <form id="summaryForm" class="space-y-6">
+                <!-- Beautiful Enhanced Input Form -->
+                <div class="mx-auto mt-10 max-w-4xl rounded-3xl bg-white/95 backdrop-blur-sm p-10 shadow-2xl border border-white/20">
+                    <form id="summaryForm" class="space-y-8">
                         <!-- YouTube URL Input with Clipboard Icon -->
                         <div class="relative">
-                            <label for="youtube-url" class="block text-sm font-medium text-gray-700">YouTube URL</label>
-                            <div class="mt-2 flex rounded-full border border-gray-300 bg-white shadow-sm">
+                            <label for="youtube-url" class="block text-sm font-semibold text-gray-800 mb-3">YouTube URL</label>
+                            <div class="flex rounded-2xl border-2 border-gray-200 bg-gray-50/50 shadow-inner hover:border-red-300 focus-within:border-red-500 transition-colors">
                                 <input
                                     type="url"
                                     id="youtube-url"
                                     name="url"
                                     placeholder="https://youtube.com/watch?v=..."
                                     required
-                                    class="block w-full flex-1 border-0 bg-transparent py-3 pl-4 pr-12 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm rounded-l-full"
+                                    class="block w-full flex-1 border-0 bg-transparent py-4 pl-6 pr-4 text-gray-900 placeholder:text-gray-500 focus:ring-0 text-base rounded-l-2xl"
                                 >
                                 <button
                                     type="button"
                                     id="pasteBtn"
-                                    class="flex items-center justify-center px-4 py-2 text-gray-400 hover:text-gray-600"
+                                    class="flex items-center justify-center px-6 py-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-r-2xl transition-colors"
                                     title="Paste from clipboard"
                                 >
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75A1.125 1.125 0 0 1 3.75 20.625V6.375c0-.621.504-1.125 1.125-1.125h3.75M9 11.25h8.25M9 15h8.25M15.75 8.25V4.875c0-.621-.504-1.125-1.125-1.125H8.625c-.621 0-1.125.504-1.125 1.125v3.375" />
                                     </svg>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Summary Type Dropdown -->
-                        <div>
-                            <label for="summary-type" class="block text-sm font-medium text-gray-700">Summary Type</label>
-                            <select
-                                id="summary-type"
-                                name="type"
-                                required
-                                class="mt-2 block w-full rounded-full border border-gray-300 bg-white px-4 py-3 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                            >
-                                <option value="quick">Quick Summary</option>
-                                <option value="bulletpoints">Bullet Points</option>
-                                <option value="structured">Structured Summary</option>
-                            </select>
-                        </div>
+                        <!-- Grid Layout for Summary Type and Language -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Summary Type Dropdown -->
+                            <div class="space-y-3">
+                                <label for="summary-type" class="block text-sm font-semibold text-gray-800">Summary Type</label>
+                                <div class="relative">
+                                    <select
+                                        id="summary-type"
+                                        name="type"
+                                        required
+                                        class="block w-full rounded-2xl border-2 border-gray-200 bg-gray-50/50 px-6 py-4 shadow-inner hover:border-red-300 focus:border-red-500 focus:ring-0 text-base appearance-none cursor-pointer transition-colors"
+                                    >
+                                        <option value="quick">Quick Summary</option>
+                                        <option value="bulletpoints">Bullet Points</option>
+                                        <option value="structured">Structured Summary</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <!-- Language Dropdown -->
-                        <div>
-                            <label for="language" class="block text-sm font-medium text-gray-700">Language</label>
-                            <select
-                                id="language"
-                                name="language"
-                                required
-                                class="mt-2 block w-full rounded-full border border-gray-300 bg-white px-4 py-3 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                            >
-                                <option value="automatic">Automatic Detection</option>
-                                <option value="en">English</option>
-                                <option value="es">Spanish</option>
-                                <option value="fr">French</option>
-                                <option value="de">German</option>
-                                <option value="zh">Chinese</option>
-                                <option value="ja">Japanese</option>
-                                <option value="ru">Russian</option>
-                                <option value="pt">Portuguese</option>
-                                <option value="ar">Arabic</option>
-                                <option value="hi">Hindi</option>
-                                <option value="it">Italian</option>
-                                <option value="ko">Korean</option>
-                                <option value="nl">Dutch</option>
-                                <option value="tr">Turkish</option>
-                                <option value="pl">Polish</option>
-                                <option value="sv">Swedish</option>
-                                <option value="da">Danish</option>
-                                <option value="no">Norwegian</option>
-                                <option value="fi">Finnish</option>
-                            </select>
+                            <!-- Custom Language Search Dropdown -->
+                            <div class="space-y-3">
+                                <label for="language-search" class="block text-sm font-semibold text-gray-800">Language</label>
+                                <div class="relative">
+                                    <!-- Search Input -->
+                                    <input
+                                        type="text"
+                                        id="language-search"
+                                        placeholder="Search language..."
+                                        class="block w-full rounded-2xl border-2 border-gray-200 bg-gray-50/50 px-6 py-4 shadow-inner hover:border-red-300 focus:border-red-500 focus:ring-0 text-base transition-colors"
+                                        autocomplete="off"
+                                    >
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    
+                                    <!-- Dropdown List -->
+                                    <div id="language-dropdown" class="hidden absolute z-10 mt-2 w-full bg-white border-2 border-gray-200 rounded-2xl shadow-xl max-h-60 overflow-auto">
+                                        <div class="py-2">
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="automatic">
+                                                Automatic Detection
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="en">
+                                                English
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="es">
+                                                Spanish
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="fr">
+                                                French
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="de">
+                                                German
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="zh">
+                                                Chinese
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="ja">
+                                                Japanese
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="ru">
+                                                Russian
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="pt">
+                                                Portuguese
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="ar">
+                                                Arabic
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="hi">
+                                                Hindi
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="it">
+                                                Italian
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="ko">
+                                                Korean
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="nl">
+                                                Dutch
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="tr">
+                                                Turkish
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="pl">
+                                                Polish
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="sv">
+                                                Swedish
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="da">
+                                                Danish
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="no">
+                                                Norwegian
+                                            </div>
+                                            <div class="language-option px-6 py-3 hover:bg-red-50 cursor-pointer transition-colors" data-value="fi">
+                                                Finnish
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Hidden input to store selected language -->
+                                    <input type="hidden" id="language" name="language" value="automatic" required>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Submit Button -->

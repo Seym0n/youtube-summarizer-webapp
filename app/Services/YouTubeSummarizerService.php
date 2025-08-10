@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\VideoSummary;
+use App\VideoSummary;
 use DateTime;
 use Exception;
 use GuzzleHttp\Client;

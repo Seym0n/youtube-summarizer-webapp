@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\RequestLimit;
+use App\RequestLimit;
 use DateTime;
 
 use function Tempest\Database\query;
@@ -49,21 +49,29 @@ final class RateLimitService
         } else {
             $lastRequestDate = $limit->last_request_date ?? new DateTime();
             
+            // Delete existing record
+            query(RequestLimit::class)
+                ->delete()
+                ->where('ip_address = ?', $ipAddress)
+                ->execute();
+            
             if ($lastRequestDate->format('Y-m-d') !== $today->format('Y-m-d')) {
                 // New day, reset count
                 query(RequestLimit::class)
-                    ->update()
-                    ->set('request_count = 1')
-                    ->set('last_request_date = ?', $today)
-                    ->where('ip_address = ?', $ipAddress)
+                    ->insert(
+                        ip_address: $ipAddress,
+                        request_count: 1,
+                        last_request_date: $today
+                    )
                     ->execute();
             } else {
                 // Same day, increment count
                 query(RequestLimit::class)
-                    ->update()
-                    ->set('request_count = request_count + 1')
-                    ->set('last_request_date = ?', $today)
-                    ->where('ip_address = ?', $ipAddress)
+                    ->insert(
+                        ip_address: $ipAddress,
+                        request_count: $limit->request_count + 1,
+                        last_request_date: $today
+                    )
                     ->execute();
             }
         }

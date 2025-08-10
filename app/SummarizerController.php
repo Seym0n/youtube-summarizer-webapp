@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Models\VideoSummary;
+use App\VideoSummary;
 use App\Services\RateLimitService;
 use App\Services\YouTubeSummarizerService;
 use GuzzleHttp\Client;
@@ -13,10 +13,11 @@ use Tempest\Router\Get;
 use Tempest\Router\Post;
 use Tempest\View\View;
 
-use function Tempest\request;
-use function Tempest\response;
 use function Tempest\Database\query;
 use function Tempest\view;
+use Tempest\Http\Responses\Json;
+use Tempest\Http\Responses\Ok;
+use Tempest\Http\Status;
 
 final readonly class SummarizerController
 {
@@ -36,29 +37,20 @@ final readonly class SummarizerController
     }
 
     #[Post('/api/summarize')]
-    public function summarize(): mixed
+    public function summarize(SummarizeRequest $request): Json
     {
-        $requestData = request()->body();
         $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-        
-        // Validate required fields
-        if (empty($requestData['url']) || empty($requestData['type']) || empty($requestData['language'])) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Missing required fields'
-            ]);
-        }
 
         // Initialize rate limiting service
         $rateLimitService = new RateLimitService();
         
         // Check rate limit
         if (!$rateLimitService->isAllowed($ipAddress)) {
-            return response()->json([
+            return new Json([
                 'success' => false,
                 'error' => 'Daily request limit exceeded (10 requests per day)',
                 'remaining' => 0
-            ]);
+            ], Status::TOO_MANY_REQUESTS);
         }
 
         // Initialize YouTube summarizer service
@@ -66,19 +58,19 @@ final readonly class SummarizerController
         $rapidApiKey = $_ENV['RAPIDAPI_KEY'] ?? '';
         
         if (empty($rapidApiKey)) {
-            return response()->json([
+            return new Json([
                 'success' => false,
                 'error' => 'API configuration error'
-            ]);
+            ], Status::INTERNAL_SERVER_ERROR);
         }
 
         $summarizerService = new YouTubeSummarizerService($httpClient, $rapidApiKey);
 
         try {
             $result = $summarizerService->getSummary(
-                $requestData['url'],
-                $requestData['type'],
-                $requestData['language']
+                $request->url,
+                $request->type,
+                $request->language
             );
 
             if ($result['success']) {
@@ -88,23 +80,24 @@ final readonly class SummarizerController
                 // Update statistics cache
                 $this->incrementVideosCount();
                 
-                return response()->json([
+                return new Json([
                     'success' => true,
                     'summary' => $result['summary'],
                     'cached' => $result['cached'],
                     'remaining' => $rateLimitService->getRemainingRequests($ipAddress) - 1
                 ]);
             } else {
-                return response()->json([
+                return new Json([
                     'success' => false,
                     'error' => $result['error']
-                ]);
+                ], Status::BAD_REQUEST);
             }
         } catch (\Exception $e) {
-            return response()->json([
+            dd($e);
+            return new Json([
                 'success' => false,
                 'error' => 'An unexpected error occurred'
-            ]);
+            ], Status::INTERNAL_SERVER_ERROR);
         }
     }
 

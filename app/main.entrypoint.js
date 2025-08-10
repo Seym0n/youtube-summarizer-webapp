@@ -4,9 +4,99 @@ import './main.entrypoint.css';
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all functionality
     initializeClipboardPaste();
+    initializeLanguageSearch();
     initializeSummaryForm();
     initializeFAQ();
 });
+
+// Language search dropdown functionality
+function initializeLanguageSearch() {
+    const searchInput = document.getElementById('language-search');
+    const dropdown = document.getElementById('language-dropdown');
+    const hiddenInput = document.getElementById('language');
+    const languageOptions = document.querySelectorAll('.language-option');
+    
+    if (!searchInput || !dropdown || !hiddenInput) return;
+    
+    // Detect browser language and set default
+    const browserLanguage = detectBrowserLanguage();
+    const defaultOption = findLanguageOption(browserLanguage) || findLanguageOption('automatic');
+    
+    if (defaultOption) {
+        const value = defaultOption.dataset.value;
+        const text = defaultOption.textContent.trim();
+        
+        searchInput.value = text;
+        hiddenInput.value = value;
+    } else {
+        searchInput.value = 'Automatic Detection';
+        hiddenInput.value = 'automatic';
+    }
+    
+    // Show dropdown on focus
+    searchInput.addEventListener('focus', function() {
+        dropdown.classList.remove('hidden');
+        showAllOptions();
+    });
+    
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+    
+    // Search functionality
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        let hasVisibleOptions = false;
+        
+        // If user is typing (not from a selection), show dropdown
+        if (searchTerm.length > 0) {
+            languageOptions.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    option.style.display = 'block';
+                    hasVisibleOptions = true;
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+            
+            if (hasVisibleOptions) {
+                dropdown.classList.remove('hidden');
+            } else {
+                dropdown.classList.add('hidden');
+            }
+        }
+    });
+    
+    // Handle option selection
+    languageOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const value = this.dataset.value;
+            const text = this.textContent.trim();
+            
+            // Update hidden input
+            hiddenInput.value = value;
+            
+            // Update search input display
+            searchInput.value = text;
+            
+            // Hide dropdown
+            dropdown.classList.add('hidden');
+            
+            // Blur the input to remove focus
+            searchInput.blur();
+        });
+    });
+    
+    function showAllOptions() {
+        languageOptions.forEach(option => {
+            option.style.display = 'block';
+        });
+    }
+}
 
 // Clipboard paste functionality
 function initializeClipboardPaste() {
@@ -162,7 +252,7 @@ function formatSummary(summary, summaryType) {
             return parseBulletPoints(summary);
         case 'quick':
         default:
-            return `<p class="text-gray-800 leading-relaxed">${escapeHtml(summary)}</p>`;
+            return parseMarkdown(summary);
     }
 }
 
@@ -219,6 +309,31 @@ function escapeHtml(unsafe) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+
+// Browser language detection utilities
+function detectBrowserLanguage() {
+    // Get browser language (e.g., 'en-US', 'es-ES', 'fr-FR')
+    const browserLang = navigator.language || navigator.userLanguage || 'en';
+    
+    // Extract language code (e.g., 'en' from 'en-US')
+    const langCode = browserLang.toLowerCase().split('-')[0];
+    
+    console.log('Detected browser language:', langCode);
+    return langCode;
+}
+
+function findLanguageOption(languageCode) {
+    const languageOptions = document.querySelectorAll('.language-option');
+    
+    for (const option of languageOptions) {
+        if (option.dataset.value === languageCode) {
+            return option;
+        }
+    }
+    
+    return null;
+}
+
 
 // FAQ functionality
 function initializeFAQ() {
