@@ -39,7 +39,7 @@ RUN npm install
 RUN npm run build
 
 # Run database migrations
-RUN php tempest migrate:up
+RUN php tempest migrate:up --force
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
