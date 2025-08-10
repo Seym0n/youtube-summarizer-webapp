@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png"/>
     <link rel="manifest" href="/favicon/site.webmanifest"/>
 
-    <x-vite-tags />
+    <x-vite-tags entrypoint="app/main.entrypoint.js" />
     <x-slot name="styles"/>
 </head>
 <body>
