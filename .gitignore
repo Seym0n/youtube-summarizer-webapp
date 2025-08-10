@@ -13,3 +13,5 @@ log/
 
 vite-tempest
 public/build/
+
+.claude
