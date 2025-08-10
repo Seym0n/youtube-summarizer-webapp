@@ -38,6 +38,9 @@ RUN npm install
 # Build frontend assets
 RUN npm run build
 
+# Run database migrations
+RUN php tempest migrate:up
+
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
