@@ -19,16 +19,17 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install nvm and Node.js
+# Set HOME environment variable and install nvm/Node.js
+ENV HOME=/root
+ENV NVM_DIR=$HOME/.nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
-    && . "$HOME/.nvm/nvm.sh" \
+    && . $NVM_DIR/nvm.sh \
     && nvm install 22 \
     && nvm use 22 \
     && nvm alias default 22
 
-# Make node and npm available in PATH for subsequent RUN commands
-ENV NVM_DIR="$HOME/.nvm"
-ENV PATH="$NVM_DIR/versions/node/v22.18.0/bin/:${PATH}"
+# Make node and npm available in PATH
+ENV PATH=$NVM_DIR/versions/node/v22.18.0/bin:$PATH
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -43,7 +44,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Install Node dependencies and build
-RUN . "$HOME/.nvm/nvm.sh" && npm install && npm run build
+RUN . $NVM_DIR/nvm.sh && npm install && npm run build
 
 # Run database migrations
 RUN php tempest migrate:up --force
