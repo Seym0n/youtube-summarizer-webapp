@@ -1,5 +1,5 @@
-# Use PHP 8.3 with Apache (more stable than 8.4)
-FROM php:8.3-apache
+# Use PHP 8.4 with Apache
+FROM php:8.4-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -14,22 +14,21 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     ca-certificates \
-    gnupg
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Setup Node.js repository
-RUN mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list
+# Install nvm and Node.js
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
+    && . "$HOME/.nvm/nvm.sh" \
+    && nvm install 22 \
+    && nvm use 22 \
+    && nvm alias default 22
 
-# Install Node.js
-RUN apt-get update && apt-get install -y nodejs
-
-# Configure and install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl
-
-# Clean up
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Make node and npm available in PATH for subsequent RUN commands
+ENV NVM_DIR="$HOME/.nvm"
+ENV PATH="$NVM_DIR/versions/node/v22.18.0/bin/:${PATH}"
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -37,17 +36,19 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
+# Copy application files first
 COPY . .
 
-# Install dependencies
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
-RUN npm install && npm run build
 
-# Run migrations (you might want to move this to runtime)
+# Install Node dependencies and build
+RUN . "$HOME/.nvm/nvm.sh" && npm install && npm run build
+
+# Run database migrations
 RUN php tempest migrate:up --force
 
-# Set permissions
+# Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
@@ -68,5 +69,8 @@ COPY <<EOF /etc/apache2/sites-available/000-default.conf
 </VirtualHost>
 EOF
 
+# Expose port 80
 EXPOSE 80
+
+# Start Apache
 CMD ["apache2-foreground"]
