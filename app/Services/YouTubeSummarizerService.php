@@ -23,6 +23,11 @@ final class YouTubeSummarizerService
     ) {
     }
 
+    public function isConfigured(): bool
+    {
+        return $this->rapidApiKey !== '';
+    }
+
     public function getSummary(string $youtubeUrl, string $summaryType, string $language): array
     {
         $videoId = $this->extractVideoId($youtubeUrl);

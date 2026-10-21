@@ -7,7 +7,6 @@ namespace App;
 use App\VideoSummary;
 use App\Services\RateLimitService;
 use App\Services\YouTubeSummarizerService;
-use GuzzleHttp\Client;
 use Tempest\Cache\Cache;
 use Tempest\Router\Get;
 use Tempest\Router\Post;
@@ -23,6 +22,8 @@ final readonly class SummarizerController
 {
     public function __construct(
         private Cache $cache,
+        private RateLimitService $rateLimitService,
+        private YouTubeSummarizerService $summarizerService,
     ) {
     }
 
@@ -41,33 +42,24 @@ final readonly class SummarizerController
     {
         $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 
-        // Initialize rate limiting service
-        $rateLimitService = new RateLimitService();
-        
         // Check rate limit
-        if (!$rateLimitService->isAllowed($ipAddress)) {
-            return new Json([
+        if (!$this->rateLimitService->isAllowed($ipAddress)) {
+            return (new Json([
                 'success' => false,
                 'error' => 'Daily request limit exceeded (10 requests per day)',
                 'remaining' => 0
-            ], Status::TOO_MANY_REQUESTS);
+            ]))->setStatus(Status::TOO_MANY_REQUESTS);
         }
 
-        // Initialize YouTube summarizer service
-        $httpClient = new Client();
-        $rapidApiKey = $_ENV['RAPIDAPI_KEY'] ?? '';
-        
-        if (empty($rapidApiKey)) {
-            return new Json([
+        if (!$this->summarizerService->isConfigured()) {
+            return (new Json([
                 'success' => false,
                 'error' => 'API configuration error'
-            ], Status::INTERNAL_SERVER_ERROR);
+            ]))->setStatus(Status::INTERNAL_SERVER_ERROR);
         }
 
-        $summarizerService = new YouTubeSummarizerService($httpClient, $rapidApiKey);
-
         try {
-            $result = $summarizerService->getSummary(
+            $result = $this->summarizerService->getSummary(
                 $request->url,
                 $request->type,
                 $request->language
@@ -75,7 +67,7 @@ final readonly class SummarizerController
 
             if ($result['success']) {
                 // Record the request
-                $rateLimitService->recordRequest($ipAddress);
+                $this->rateLimitService->recordRequest($ipAddress);
                 
                 // Update statistics cache
                 $this->incrementVideosCount();
@@ -84,20 +76,19 @@ final readonly class SummarizerController
                     'success' => true,
                     'summary' => $result['summary'],
                     'cached' => $result['cached'],
-                    'remaining' => $rateLimitService->getRemainingRequests($ipAddress) - 1
+                    'remaining' => $this->rateLimitService->getRemainingRequests($ipAddress) - 1
                 ]);
             } else {
-                return new Json([
+                return (new Json([
                     'success' => false,
                     'error' => $result['error']
-                ], Status::BAD_REQUEST);
+                ]))->setStatus(Status::BAD_REQUEST);
             }
         } catch (\Exception $e) {
-            dd($e);
-            return new Json([
+            return (new Json([
                 'success' => false,
                 'error' => 'An unexpected error occurred'
-            ], Status::INTERNAL_SERVER_ERROR);
+            ]))->setStatus(Status::INTERNAL_SERVER_ERROR);
         }
     }
 
