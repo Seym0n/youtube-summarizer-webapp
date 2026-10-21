@@ -7,7 +7,7 @@ namespace Tests;
 /**
  * @internal
  */
-final class HomeControllerTest extends IntegrationTestCase
+final class HomeControllerTest extends DatabaseTestCase
 {
     public function test_index(): void
     {
